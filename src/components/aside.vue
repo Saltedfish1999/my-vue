@@ -1,5 +1,6 @@
 <template>
   <el-menu
+    style="max-width: 230px; width: 100%"
     default-active="2"
     class="aside-container"
     @open="handleOpen"

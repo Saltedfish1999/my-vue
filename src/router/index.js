@@ -57,7 +57,7 @@ const routes = [
       },
       {
         path: "vppz",
-        meta: { id: "3", name: "DIDI陪诊", icon: "BellFilled" },
+        meta: { id: "3", name: "陪诊管理", icon: "BellFilled" },
         children: [
           {
             path: "",

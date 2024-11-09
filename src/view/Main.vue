@@ -3,15 +3,22 @@
     <el-container>
       <Aside />
       <el-container>
-        <el-header>Header</el-header>
-        <el-main>Main</el-main>
+        <el-header>
+          <Header />
+        </el-header>
+
+        <el-main>
+          <RouterView />
+        </el-main>
       </el-container>
     </el-container>
   </div>
 </template>
 
 <script setup>
+import { RouterView } from "vue-router";
 import Aside from "../components/aside.vue";
+import Header from "../components/navHeader.vue";
 </script>
 
 <style lang="less" scoped>
