@@ -1,6 +1,6 @@
 <template>
   <el-menu
-    style="max-width: 230px; width: 100%"
+    :style="{ width: !isCollapse ? '234px' : '64px' }"
     default-active="2"
     class="aside-container"
     @open="handleOpen"
@@ -8,8 +8,9 @@
     active-text-color="#ffd04b"
     background-color="#545c64"
     text-color="#fff"
+    :collapse="isCollapse"
   >
-    <p class="logo-lg">陪诊管理</p>
+    <p class="logo-lg">{{ isCollapse ? "管理" : "陪诊管理" }}</p>
     <TreeMenu :index="1" :menu-data="menuData" />
   </el-menu>
 </template>
@@ -17,12 +18,14 @@
 <script setup>
 import TreeMenu from "./treeMenu.vue";
 import { useRouter } from "vue-router";
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
+import { useStore } from "vuex";
 
 const router = useRouter();
-console.log(router);
 
 const menuData = reactive(router.options.routes[0].children); //创建响应数据
+const store = useStore();
+const isCollapse = computed(() => store.state.menu.isCollapse);
 const handleClose = () => {};
 const handleOpen = () => {};
 </script>
