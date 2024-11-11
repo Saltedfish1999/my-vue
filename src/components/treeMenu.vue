@@ -14,7 +14,7 @@
     <el-sub-menu
       v-else
       :index="`${props.index}-${item.meta.id}`"
-      :key="submenu + `${props.index}-${item.meta.id}`"
+      :key="`${props.index}-${item.meta.id}`"
     >
       <template #title>
         <el-icon size="20">
@@ -32,14 +32,18 @@
 
 <script setup>
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 const props = defineProps(["index", "menuData"]); //接受父组件的数据
 const router = useRouter(); //创建router实例
+const store = useStore(); //创建store实例
+
 /**
  * 点击跳转事件
  */
 const handleClick = (item, active) => {
   router.push(item.meta.path);
+  store.commit("addMenu", item.meta);
 };
 console.log(props);
 </script>

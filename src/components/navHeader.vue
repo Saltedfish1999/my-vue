@@ -4,6 +4,25 @@
       <el-icon class="icon" size="20" @click="store.commit('collapseMenu')">
         <Fold />
       </el-icon>
+      <ul class="flex-box">
+        <li
+          v-for="(item, index) in selectMenu"
+          :key="item.path"
+          class="tab flex-box"
+          :class="{ selected: route.path === item.path }"
+        >
+          <el-icon size="12">
+            <component :is="item.icon" />
+          </el-icon>
+          <router-link class="text flex-box" :to="{ path: item.path }">
+            {{ item.name }}
+          </router-link>
+
+          <el-icon class="close" size="12" @click="closeTab(item, index)">
+            <Close />
+          </el-icon>
+        </li>
+      </ul>
     </div>
     <div class="header-right">
       <el-dropdown>
@@ -26,15 +45,49 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { useStore } from "vuex";
-//获取vuex中的数据
-const store = useStore();
+import { computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+
+const store = useStore(); //获取vuex中的数据
+const selectMenu = computed(() => store.state.menu.selectMenu);
+const route = useRoute();
+const router = useRouter();
+/**
+ * 点击关闭tag
+ */
+const closeTab = (item, index) => {
+  store.commit("closeMenu", item);
+
+  //删除当前页tag
+  if (route.path !== item.path) {
+    return;
+  }
+  const selectMenuData = selectMenu.value;
+  if (index === selectMenuData.length) {
+    //如果tag只有一个元素
+    if (!selectMenuData.length) {
+      router.push("/");
+    } else {
+      router.push({
+        path: selectMenuData[index - 1].path,
+      });
+    }
+  } else {
+    router.push({
+      path: selectMenuData[index].path,
+    });
+  }
+};
 </script>
+
 <style lang="less" scoped>
 .flex-box {
   display: flex;
   align-items: center;
+  height: 100%;
 }
 .header-container {
   height: 100%;
@@ -53,11 +106,43 @@ const store = useStore();
       background-color: #f5f5f5;
       cursor: pointer;
     }
+    .tab {
+      padding: 0 10px;
+      height: 100%;
+      .text {
+        margin: 0 5px;
+      }
+      .close {
+        visibility: hidden;
+      }
+      &.selected {
+        a {
+          color: #409eff;
+        }
+        i {
+          color: #409eff;
+        }
+        background-color: #f5f5f5;
+      }
+    }
+    .tab:hover {
+      background-color: #f5f5f5;
+      .close {
+        visibility: inherit;
+        cursor: pointer;
+        color: #000;
+      }
+    }
   }
   .header-right {
     .user-name {
       margin-left: 10px;
     }
+  }
+  a {
+    height: 100%;
+    font-size: 15px;
+    color: #333;
   }
 }
 </style>
