@@ -12,6 +12,7 @@
         }}</el-link>
       </div>
       <el-form
+        ref="loginFormRef"
         :model="loginForm"
         style="max-width: 600px"
         class="demo-ruleForm"
@@ -50,14 +51,14 @@
           <el-button
             type="primary"
             :style="{ width: '100%' }"
-            @click="submitForm"
+            @click="submitForm(loginFormRef)"
             v-show="!formType"
             >登录</el-button
           >
           <el-button
             type="primary"
             :style="{ width: '100%' }"
-            @click="submitForm"
+            @click="registerForm(loginFormRef)"
             v-show="formType"
             >注册</el-button
           >
@@ -69,11 +70,15 @@
 
 <script setup>
 import { UserFilled, Lock } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 import { ref, reactive } from "vue";
+import { getCode, userAuth, userLogin } from "../../api";
+import { useRouter } from "vue-router";
 
 const imgUrl = new URL("/public/login-head.png", import.meta.url).href;
 const formType = ref(0); //切换表单 0登录 1注册
 let flag = false; // 进行防抖处理
+const loginFormRef = ref(); // 获取form表单实例
 //表单信息初始化
 const loginForm = reactive({
   userName: "",
@@ -85,6 +90,8 @@ const countdown = reactive({
   validText: "获取验证码",
   time: 60,
 });
+// 创建router实例
+const router = useRouter();
 
 /**
  * 用户名校验
@@ -132,23 +139,69 @@ const countdownChange = () => {
   }
 
   //倒计时
-  setInterval(() => {
+  const time = setInterval(() => {
     if (countdown.time <= 0) {
       countdown.time = 60;
       countdown.validText = "获取验证码";
       flag = false;
+      clearInterval(time);
     } else {
       countdown.time -= 1;
       countdown.validText = `剩余${countdown.time}s`;
     }
   }, 1000);
   flag = true;
+  getCode({ tel: loginForm.userName }).then((data) => {
+    if (data.code === 10000) {
+      ElMessage.success("发送成功");
+    }
+  });
 };
 /**
- * 表单提交
+ * 注册表单提交
  */
-const submitForm = () => {
-  console.log(!formType);
+const registerForm = async (formEl) => {
+  if (!formEl) return;
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      console.log("submit!");
+      userAuth(loginForm).then((data) => {
+        if (data.code === 10000) {
+          ElMessage.success("注册成功，请登录");
+        }
+      });
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
+};
+/**
+ * 登录表单提交
+ */
+const submitForm = async (formEl) => {
+  if (!formEl) return;
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      console.log("submit!");
+      userLogin(loginForm).then((data) => {
+        console.log(data.data.data.token);
+        console.log(data.data.code);
+        if (data.data.code === 10000) {
+          ElMessage.success("登录成功");
+          // 将用户信息和token缓存到localStorage中
+          console.log(data.token);
+          localStorage.setItem("pz_token", data.data.data.token);
+          localStorage.setItem(
+            "pz_userInfo",
+            JSON.stringify(data.data.data.userInfo)
+          );
+          router.push("/");
+        }
+      });
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
 };
 //表单校验
 const rules = reactive({

@@ -3,8 +3,8 @@ import { createWebHashHistory, createRouter } from "vue-router";
 import Layout from "../view/Main.vue";
 import Order from "../view/order/index.vue";
 import Login from "../view/login/index.vue";
-import Admin from "../view/admin/index.vue";
-import Group from "../view/group/index.vue";
+import Admin from "../view/auth/admin/index.vue";
+import Group from "../view/auth/group/index.vue";
 import Staff from "../view/staff/index.vue";
 import DashBoard from "../view/dashboard/index.vue";
 
