@@ -1,7 +1,12 @@
-const state = {
-  isCollapse: false,
-  selectMenu: [],
-};
+const localData = localStorage.getItem("pz_v3pz");
+
+const state = localData
+  ? localData.menu
+  : {
+      isCollapse: false,
+      selectMenu: [],
+      routerList: [],
+    };
 const mutations = {
   /**
    * 控制侧边栏的伸展
@@ -30,6 +35,29 @@ const mutations = {
       (val) => val.name === payload.name
     );
     state.selectMenu.splice(index, 1);
+  },
+  /**
+   * 动态路由的定义
+   */
+  dynamicMenu(state, payload) {
+    const modules = import.meta.glob("../view/**/**/*.vue");
+    // const modules = import.meta.glob('./dir/*.js')
+    console.log(modules);
+
+    // 动态路由拼接
+    function routerSet(router) {
+      router.forEach((route) => {
+        //不存在子路由，就进行拼接
+        if (!route.children) {
+          const url = `../view${route.meta.path}/index.vue`;
+          route.component = modules[url];
+        } else {
+          routerSet(route.children);
+        }
+      });
+    }
+    routerSet(payload);
+    state.routerList = payload;
   },
 };
 export default {

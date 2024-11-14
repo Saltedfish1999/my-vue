@@ -71,9 +71,10 @@
 <script setup>
 import { UserFilled, Lock } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { ref, reactive } from "vue";
-import { getCode, userAuth, userLogin } from "../../api";
+import { ref, reactive, computed, toRaw } from "vue";
+import { getCode, userAuth, userLogin, menuPermissions } from "../../api";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 const imgUrl = new URL("/public/login-head.png", import.meta.url).href;
 const formType = ref(0); //切换表单 0登录 1注册
@@ -92,7 +93,9 @@ const countdown = reactive({
 });
 // 创建router实例
 const router = useRouter();
-
+//创建vuex的实例
+const store = useStore();
+const routerList = computed(() => store.state.menu.routerList);
 /**
  * 用户名校验
  */
@@ -189,13 +192,20 @@ const submitForm = async (formEl) => {
         if (data.data.code === 10000) {
           ElMessage.success("登录成功");
           // 将用户信息和token缓存到localStorage中
-          console.log(data.token);
+          console.log(data.data.data);
           localStorage.setItem("pz_token", data.data.data.token);
           localStorage.setItem(
             "pz_userInfo",
             JSON.stringify(data.data.data.userInfo)
           );
-          router.push("/");
+          menuPermissions().then((data) => {
+            store.commit("dynamicMenu", data.data.data);
+            console.log(routerList);
+            toRaw(routerList.value).forEach((element) => {
+              router.addRoute("main", element);
+            });
+            router.push("/");
+          });
         }
       });
     } else {

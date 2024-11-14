@@ -23,9 +23,10 @@ import { useStore } from "vuex";
 
 const router = useRouter();
 
-const menuData = reactive(router.options.routes[0].children); //创建响应数据
+// const menuData = reactive(router.options.routes[0].children); //创建响应数据
 const store = useStore();
 const isCollapse = computed(() => store.state.menu.isCollapse);
+const menuData = computed(() => store.state.menu.routerList);
 const handleClose = () => {};
 const handleOpen = () => {};
 </script>

@@ -25,20 +25,14 @@
       </ul>
     </div>
     <div class="header-right">
-      <el-dropdown>
+      <el-dropdown @command="handleClick">
         <div class="el-dropdown-link flex-box">
-          <el-avatar
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-          />
-          <p class="user-name">admin</p>
+          <el-avatar :src="userInfo.avatar" />
+          <p class="user-name">{{ userInfo.name }}</p>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item>Action 2</el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item disabled>Action 4</el-dropdown-item>
-            <el-dropdown-item divided>Action 5</el-dropdown-item>
+            <el-dropdown-item command="cancel">退出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -55,6 +49,7 @@ const store = useStore(); //获取vuex中的数据
 const selectMenu = computed(() => store.state.menu.selectMenu);
 const route = useRoute();
 const router = useRouter();
+const userInfo = JSON.parse(localStorage.getItem("pz_userInfo"));
 /**
  * 点击关闭tag
  */
@@ -79,6 +74,19 @@ const closeTab = (item, index) => {
     router.push({
       path: selectMenuData[index].path,
     });
+  }
+};
+/**
+ * 点击登出
+ */
+const handleClick = (command) => {
+  console.log(123);
+
+  if (command === "cancel") {
+    localStorage.removeItem("pz_token");
+    localStorage.removeItem("pz_userInfo");
+    localStorage.removeItem("pz_v3pz");
+    router.push("/login");
   }
 };
 </script>

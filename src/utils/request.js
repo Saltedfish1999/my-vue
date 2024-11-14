@@ -35,6 +35,7 @@ instance.interceptors.response.use(
     if (response.data.code === -2) {
       localStorage.removeItem("pz_token");
       localStorage.removeItem("pz_userInfo");
+      localStorage.removeItem("pz_v3pz");
       window.location.href = window.location.origin;
     }
     return response;
