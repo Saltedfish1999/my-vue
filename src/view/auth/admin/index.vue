@@ -109,9 +109,9 @@ const tableData = reactive({
   total: "",
 });
 const rules = reactive({
-  name: [{ required: true, trigger: "blue", message: "请输入用户名" }],
+  name: [{ required: true, trigger: "blur", message: "请输入用户名" }],
   permissions_id: [
-    { required: true, trigger: "blue", message: "请输入权限名称" },
+    { required: true, trigger: "blur", message: "请输入权限名称" },
   ],
 });
 const dialogformVisible = ref(false);
